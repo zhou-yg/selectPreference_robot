@@ -1,0 +1,9 @@
+{
+  "name": "application-name",
+  "version": "0.0.1",
+  "description": "phantomjs project",
+  "repository": "http://github.com/zhou-yg/nomiwan_animation_robot",
+  "dependencies": {
+    "promise": "^7.0.4"
+  }
+}
