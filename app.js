@@ -7,7 +7,7 @@ var allStars = require('./lib/allStars'),
 
 var allStarsMain = allStars();
 
-var oneNum = 100;
+var oneNum = 10;
 
 var saveFile = './data/allStars.json',
     saveBaikeFile = './data/allBaikeStars.json';
@@ -28,7 +28,6 @@ var queryFn = function(allStarsArr,unitNum,number,whenEnd){
     if(!number){
         number = 0;
     }
-
     allStarsMain({
         startIndex:unitNum*number,
         everyNum:unitNum
@@ -39,7 +38,7 @@ var queryFn = function(allStarsArr,unitNum,number,whenEnd){
 
             fs.write(saveFile,JSON.stringify(allStarsArr,null,2),'w');
 
-            if(allStars.length>0){
+            if(allStars && allStars.length>0 && unitNum*number<20){
                 queryFn(allStarsArr,unitNum,number+1,whenEnd);
             }else{
                 whenEnd(allStarsArr);
@@ -51,7 +50,11 @@ var queryFn = function(allStarsArr,unitNum,number,whenEnd){
 };
 
 queryFn([],oneNum,0,function(allStarsArr){
+    console.log('allStarsArr len:',allStarsArr.length);
     queryBaike(allStarsArr).done(function(allStarsArr){
+        console.log('allBaikeStars len:',allStarsArr.length);
         fs.write(saveBaikeFile,JSON.stringify(allStarsArr,null,2),'w');
+
+        phantom.exit();
     });
 });
