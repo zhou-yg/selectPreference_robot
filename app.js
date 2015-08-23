@@ -5,22 +5,19 @@ var fs = require('fs');
 var allStars = require('./lib/allStars'),
     queryMessageStarsBaike = require('./lib/allStarsBaike')
 
+var stTime = +new Date();
+
 var allStarsMain = allStars();
 
-var oneNum = 10;
+var oneNum = 70;
 
-var saveFile = './data/allStars.json',
-    saveBaikeFile = './data/allBaikeStars.json';
+var saveFile = './data/allStars__'+stTime+'.json',
+    saveBaikeFile = './data/allBaikeStars__'+stTime+'.json';
+
 
 //爬百科
-var queryBaike = function (allStarsArr) {
-    var d = Q.defer();
+var queryBaike = function (allStarsArr,saveFileCallback) {
 
-    queryMessageStarsBaike(allStarsArr,function(allStarsBaikeArr){
-        d.resolve(allStarsBaikeArr)
-    });
-
-    return d.promise;
 };
 
 //递归的爬
@@ -38,9 +35,10 @@ var queryFn = function(allStarsArr,unitNum,number,whenEnd){
 
             fs.write(saveFile,JSON.stringify(allStarsArr,null,2),'w');
 
-            if(allStars && allStars.length>0 && unitNum*number<20){
+            if(allStars && allStars.length>0){
                 queryFn(allStarsArr,unitNum,number+1,whenEnd);
             }else{
+                console.log('===== 爬取接口完成,耗时 ',(+new Date() - stTime)/1000,' 秒  ========');
                 whenEnd(allStarsArr);
             }
         }catch (e){
@@ -50,11 +48,15 @@ var queryFn = function(allStarsArr,unitNum,number,whenEnd){
 };
 
 queryFn([],oneNum,0,function(allStarsArr){
-    console.log('allStarsArr len:',allStarsArr.length);
-    queryBaike(allStarsArr).done(function(allStarsArr){
+
+    queryMessageStarsBaike(allStarsArr,stTime,function(allStarsArr,isExit){
         console.log('allBaikeStars len:',allStarsArr.length);
+        console.log('===== 当前写入 '+allStarsArr.length+' 条百科 ,耗时 ',(+new Date() - stTime)/1000,' 秒  ========');
+
         fs.write(saveBaikeFile,JSON.stringify(allStarsArr,null,2),'w');
 
-        phantom.exit();
+        if(isExit){
+            phantom.exit();
+        }
     });
 });
