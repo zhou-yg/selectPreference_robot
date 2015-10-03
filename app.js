@@ -3,7 +3,8 @@ var Q = require('q');
 var fs = require('fs');
 
 var allStars = require('./lib/allStars'),
-    queryMessageStarsBaike = require('./lib/allStarsBaike')
+    queryMessageStarsBaike = require('./lib/allStarsBaike'),
+    queryUcBaike = require('./lib/allStarsUcBaike');
 
 var stTime = +new Date();
 
@@ -12,13 +13,8 @@ var allStarsMain = allStars();
 var oneNum = 70;
 
 var saveFile = './data/allStars__'+stTime+'.json',
-    saveBaikeFile = './data/allBaikeStars__'+stTime+'.json';
-
-
-//爬百科
-var queryBaike = function (allStarsArr,saveFileCallback) {
-
-};
+    saveBaikeFile = './data/allBaikeStars__'+stTime+'.json',
+    saveUcBaikeFile = './data/allUcBaikeStars__'+stTime+'.json';
 
 //递归的爬
 var queryFn = function(allStarsArr,unitNum,number,whenEnd){
@@ -56,7 +52,23 @@ queryFn([],oneNum,0,function(allStarsArr){
         fs.write(saveBaikeFile,JSON.stringify(allStarsArr,null,2),'w');
 
         if(isExit){
-            phantom.exit();
+
+            queryUcBaikeFn(allStarsArr);
         }
     });
 });
+
+var queryUcBaikeFn = function(allStarsArr){
+
+    queryUcBaike(allStarsArr,stTime,function(allStarsArr,isExit){
+
+        console.log('UC Baike len:',allStarsArr.length);
+        console.log('===== 当前写入 '+allStarsArr.length+' 条 UC ,耗时 ',(+new Date() - stTime)/1000,' 秒  ========');
+
+        fs.write(saveUcBaikeFile,JSON.stringify(allStarsArr,null,2),'w');
+
+        if(isExit){
+            phantom.exit();
+        }
+    });
+}
